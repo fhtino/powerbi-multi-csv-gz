@@ -1,0 +1,42 @@
+{
+  "config": "{\"version\":\"5.51\",\"themeCollection\":{\"baseTheme\":{\"name\":\"CY24SU02\",\"version\":\"5.51\",\"type\":2}},\"activeSectionIndex\":0,\"defaultDrillFilterOtherVisuals\":true,\"linguisticSchemaSyncVersion\":2,\"settings\":{\"useNewFilterPaneExperience\":true,\"allowChangeFilterTypes\":true,\"useStylableVisualContainerHeader\":true,\"queryLimitOption\":6,\"exportDataMode\":1,\"useDefaultAggregateDisplayName\":true},\"objects\":{\"section\":[{\"properties\":{\"verticalAlignment\":{\"expr\":{\"Literal\":{\"Value\":\"'Top'\"}}}}}]}}",
+  "layoutOptimization": 0,
+  "resourcePackages": [
+    {
+      "resourcePackage": {
+        "disabled": false,
+        "items": [
+          {
+            "name": "CY24SU02",
+            "path": "BaseThemes/CY24SU02.json",
+            "type": 202
+          }
+        ],
+        "name": "SharedResources",
+        "type": 2
+      }
+    }
+  ],
+  "sections": [
+    {
+      "config": "{}",
+      "displayName": "Page 1",
+      "displayOption": 1,
+      "filters": "[]",
+      "height": 720.00,
+      "name": "ReportSection",
+      "visualContainers": [
+        {
+          "config": "{\"name\":\"cdbe3f3851905e372b5a\",\"layouts\":[{\"id\":0,\"position\":{\"x\":23.59322033898305,\"y\":25.220338983050844,\"z\":0,\"width\":616.6779661016949,\"height\":319.728813559322,\"tabOrder\":0}}],\"singleVisual\":{\"visualType\":\"lineChart\",\"projections\":{\"Category\":[{\"queryRef\":\"Data1.DT.Variation.Date Hierarchy.Year\",\"active\":true},{\"queryRef\":\"Data1.DT.Variation.Date Hierarchy.Quarter\",\"active\":true},{\"queryRef\":\"Data1.DT.Variation.Date Hierarchy.Month\",\"active\":true},{\"queryRef\":\"Data1.DT.Variation.Date Hierarchy.Day\",\"active\":true}],\"Y\":[{\"queryRef\":\"Sum(Data1.Price)\"}]},\"prototypeQuery\":{\"Version\":2,\"From\":[{\"Name\":\"d\",\"Entity\":\"Data1\",\"Type\":0}],\"Select\":[{\"HierarchyLevel\":{\"Expression\":{\"Hierarchy\":{\"Expression\":{\"PropertyVariationSource\":{\"Expression\":{\"SourceRef\":{\"Source\":\"d\"}},\"Name\":\"Variation\",\"Property\":\"DT\"}},\"Hierarchy\":\"Date Hierarchy\"}},\"Level\":\"Year\"},\"Name\":\"Data1.DT.Variation.Date Hierarchy.Year\",\"NativeReferenceName\":\"DT Year\"},{\"HierarchyLevel\":{\"Expression\":{\"Hierarchy\":{\"Expression\":{\"PropertyVariationSource\":{\"Expression\":{\"SourceRef\":{\"Source\":\"d\"}},\"Name\":\"Variation\",\"Property\":\"DT\"}},\"Hierarchy\":\"Date Hierarchy\"}},\"Level\":\"Quarter\"},\"Name\":\"Data1.DT.Variation.Date Hierarchy.Quarter\",\"NativeReferenceName\":\"DT Quarter\"},{\"HierarchyLevel\":{\"Expression\":{\"Hierarchy\":{\"Expression\":{\"PropertyVariationSource\":{\"Expression\":{\"SourceRef\":{\"Source\":\"d\"}},\"Name\":\"Variation\",\"Property\":\"DT\"}},\"Hierarchy\":\"Date Hierarchy\"}},\"Level\":\"Month\"},\"Name\":\"Data1.DT.Variation.Date Hierarchy.Month\",\"NativeReferenceName\":\"DT Month\"},{\"HierarchyLevel\":{\"Expression\":{\"Hierarchy\":{\"Expression\":{\"PropertyVariationSource\":{\"Expression\":{\"SourceRef\":{\"Source\":\"d\"}},\"Name\":\"Variation\",\"Property\":\"DT\"}},\"Hierarchy\":\"Date Hierarchy\"}},\"Level\":\"Day\"},\"Name\":\"Data1.DT.Variation.Date Hierarchy.Day\",\"NativeReferenceName\":\"DT Day\"},{\"Aggregation\":{\"Expression\":{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"d\"}},\"Property\":\"Price\"}},\"Function\":0},\"Name\":\"Sum(Data1.Price)\",\"NativeReferenceName\":\"Sum of Price\"}]},\"drillFilterOtherVisuals\":true}}",
+          "filters": "[]",
+          "height": 319.73,
+          "width": 616.68,
+          "x": 23.59,
+          "y": 25.22,
+          "z": 0.00
+        }
+      ],
+      "width": 1280.00
+    }
+  ]
+}
