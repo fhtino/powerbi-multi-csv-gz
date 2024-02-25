@@ -1,4 +1,6 @@
-﻿using System.IO.Compression;
+﻿using System.Globalization;
+using System.IO.Compression;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
 namespace FakeDataGenerator
@@ -9,39 +11,78 @@ namespace FakeDataGenerator
 
         static void Main(string[] args)
         {
-            var rnd = new Random();
+            string outputFolder = "../../../../Data/";
+            Directory.CreateDirectory(Path.Combine(outputFolder, "Orders"));
+            Directory.CreateDirectory(Path.Combine(outputFolder, "OrdersDetails"));
 
-            string csvHeaderLine = "ID,DT,Item,Price";
-            int idCounter = 0;
+            int maxOrdersPerFiles = 20000;
+            DateTime baseDT = new DateTime(2024, 1, 1);
 
-            for (int i = 0; i < 12; i++)
+            var rnd = new Random(1);
+
+            string OrderCsvHeaderLine = "OrderID,DT,CustomerID";
+            string OrderDetailsCsvHeaderLine = "OrderID,RowID,Item,Price";
+
+            int fileCounter = 0;
+            int orderPerFileCounter = 0;
+
+            var orderCsvBody = new StringBuilder();
+            var orderDetailsCsvBody = new StringBuilder();
+
+            for (int orderID = 0; orderID < 200 * 1000; orderID++)
             {
+                if (orderCsvBody.Length == 0) orderCsvBody.AppendLine(OrderCsvHeaderLine);
+                if (orderDetailsCsvBody.Length == 0) orderDetailsCsvBody.AppendLine(OrderDetailsCsvHeaderLine);
 
-                var csvBody = new StringBuilder();
-                csvBody.AppendLine(csvHeaderLine);
+                int dayNumber = rnd.Next(0, 365);
 
-                for (int j = 0; j < 10 * 1000; j++)
+                orderCsvBody.AppendLine(
+                    String.Join(",",
+                        orderID.ToString(),
+                        baseDT.AddDays(dayNumber).ToString("O"),
+                        rnd.Next(0, 100)
+                        ));
+
+                for (int orderRowID = 0; orderRowID < rnd.Next(0, 10); orderRowID++)
                 {
-                    csvBody.AppendLine(
+                    double price = (rnd.Next(0, 5) + 5 + 3 * Math.Sin((double)dayNumber / 20.0));
+
+                    orderDetailsCsvBody.AppendLine(
                         String.Join(",",
-                            idCounter.ToString(),
-                            new DateTime(2024, i + 1, rnd.Next(1, 28)).ToString("O"),
-                            "item_" + rnd.Next(0, 10),
-                            (i + rnd.Next(0, 10)).ToString()));
+                            orderID.ToString(),
+                            orderRowID.ToString(),
+                            "item_" + rnd.Next(0, 100),
+                            price.ToString(CultureInfo.InvariantCulture)
+                        ));
                 }
 
+                orderPerFileCounter++;
 
-                using (var ms = new MemoryStream())
+                if (orderPerFileCounter >= maxOrdersPerFiles)
                 {
-                    using (var gzip = new GZipStream(ms, CompressionMode.Compress, false))
-                    {
-                        gzip.Write(Encoding.UTF8.GetBytes(csvBody.ToString()));
-                    }
+                    WriteCsvGz(orderCsvBody.ToString(), $"../../../../Data/Orders/orders_{fileCounter}.csv.gz");
+                    WriteCsvGz(orderDetailsCsvBody.ToString(), $"../../../../Data/OrdersDetails/orders_details_{fileCounter}.csv.gz");
 
-                    string outFileName = $"fakedata_{i}.csv.gz";
-                    File.WriteAllBytes($"../../../../Data/{outFileName}", ms.ToArray());
+                    orderPerFileCounter = 0;
+                    fileCounter++;
+                    orderCsvBody.Clear();
+                    orderDetailsCsvBody.Clear();
                 }
+            }           
+        }
 
+
+        private static void WriteCsvGz(string body, string fileName)
+        {
+            Console.WriteLine($"{fileName}  [{body.Length}]");
+
+            using (var ms = new MemoryStream())
+            {
+                using (var gzip = new GZipStream(ms, CompressionMode.Compress, false))
+                {
+                    gzip.Write(Encoding.UTF8.GetBytes(body));
+                }
+                File.WriteAllBytes(fileName, ms.ToArray());
             }
         }
 

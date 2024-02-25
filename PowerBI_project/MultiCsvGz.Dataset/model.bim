@@ -12,7 +12,7 @@
       },
       {
         "name": "PBI_QueryOrder",
-        "value": "[\"Data1\",\"DataFolder\"]"
+        "value": "[\"DataFolder\",\"CsvGzImporter\",\"Orders\",\"OrdersDetails\"]"
       },
       {
         "name": "__PBI_TimeIntelligenceEnabled",
@@ -43,153 +43,89 @@
         "name": "DataFolder",
         "annotations": [
           {
-            "name": "PBI_NavigationStepName",
-            "value": "Navigation"
-          },
-          {
             "name": "PBI_ResultType",
             "value": "Text"
+          },
+          {
+            "name": "PBI_NavigationStepName",
+            "value": "Navigation"
           }
         ],
-        "expression": "\"X:\\work_fabry\\src\\GitHub\\powerbi-multi-csv-gz.git\\Data\" meta [IsParameterQuery=true, Type=\"Text\", IsParameterQueryRequired=true]",
+        "expression": "\"X:\\work_fabry\\src\\GitHub\\powerbi-multi-csv-gz.git\\Data\\\" meta [IsParameterQuery=true, Type=\"Text\", IsParameterQueryRequired=true]",
         "kind": "m",
-        "lineageTag": "33f827b9-34f7-4807-aa4a-02105555910a"
+        "lineageTag": "33f827b9-34f7-4807-aa4a-02105555910a",
+        "queryGroup": "Data"
+      },
+      {
+        "name": "CsvGzImporter",
+        "annotations": [
+          {
+            "name": "PBI_ResultType",
+            "value": "Function"
+          }
+        ],
+        "expression": [
+          "let",
+          "    MyFunct = (DataFolder as text, NumOfFields as number) =>  let   ",
+          "    ",
+          "        Source = Folder.Files(DataFolder & \"\"),",
+          "",
+          "        gzOnlyFiles =  Table.RenameColumns(",
+          "                        Table.SelectColumns(",
+          "                            Table.SelectRows(",
+          "                                Source,",
+          "                                each [Extension] = \".gz\"),",
+          "                            {\"Name\", \"Content\"}),",
+          "                        {\"Name\", \"GZFileName\"}),",
+          "",
+          "        withCsvBody = Table.AddColumn(gzOnlyFiles, \"csvbody\", each Binary.Decompress([Content], Compression.GZip)  ),",
+          "        withCsvTable = Table.AddColumn(withCsvBody , \"csvtable\", each Csv.Document([csvbody],[Delimiter=\",\", Columns=NumOfFields, Encoding=1252, QuoteStyle=QuoteStyle.None])   ),",
+          "        withCsvTableHeaders = Table.AddColumn(withCsvTable, \"csvtableH\", each Table.PromoteHeaders([csvtable] , [PromoteAllScalars=true] ) ),",
+          "        firstTableColumns = Table.ColumnNames(Table.First(withCsvTableHeaders)[csvtableH]),",
+          "        expandTable = Table.ExpandTableColumn(withCsvTableHeaders, \"csvtableH\",  firstTableColumns),",
+          "        finalTable = Table.RemoveColumns(expandTable, {\"GZFileName\", \"Content\", \"csvbody\", \"csvtable\"})  ",
+          "",
+          "    in",
+          "        finalTable",
+          "",
+          "in",
+          "    MyFunct"
+        ],
+        "kind": "m",
+        "lineageTag": "efa5fc63-890e-4eaa-8fb4-5fa6f18656f0",
+        "queryGroup": "Data"
+      }
+    ],
+    "queryGroups": [
+      {
+        "annotations": [
+          {
+            "name": "PBI_QueryGroupOrder",
+            "value": "0"
+          }
+        ],
+        "folder": "Data"
       }
     ],
     "relationships": [
       {
-        "name": "e1e43401-fc99-4c99-91c6-26eba7470361",
+        "name": "2f053237-7ed6-41b4-8a5b-588976ea38d0",
         "fromColumn": "DT",
-        "fromTable": "Data1",
+        "fromTable": "Orders",
         "joinOnDateBehavior": "datePartOnly",
         "toColumn": "Date",
-        "toTable": "LocalDateTable_9fd9353c-ff3f-4e38-b72e-b208bf8e6b73"
+        "toTable": "LocalDateTable_3fd8f3fd-91b0-4776-80af-bd8c78e12aff"
+      },
+      {
+        "name": "b19c0edd-51eb-4db6-9a4e-60bdfe6eebab",
+        "fromColumn": "OrderID",
+        "fromTable": "OrdersDetails",
+        "toColumn": "OrderID",
+        "toTable": "Orders"
       }
     ],
     "sourceQueryCulture": "it-IT",
     "tables": [
-      {
-        "name": "Data1",
-        "annotations": [
-          {
-            "name": "PBI_NavigationStepName",
-            "value": "Navigation"
-          },
-          {
-            "name": "PBI_ResultType",
-            "value": "Table"
-          }
-        ],
-        "columns": [
-          {
-            "name": "ID",
-            "annotations": [
-              {
-                "name": "SummarizationSetBy",
-                "value": "Automatic"
-              }
-            ],
-            "dataType": "int64",
-            "formatString": "0",
-            "lineageTag": "0be7272a-58ce-4a46-9999-438fc89852ea",
-            "sourceColumn": "ID",
-            "summarizeBy": "count"
-          },
-          {
-            "name": "DT",
-            "annotations": [
-              {
-                "name": "SummarizationSetBy",
-                "value": "Automatic"
-              }
-            ],
-            "dataType": "dateTime",
-            "formatString": "General Date",
-            "lineageTag": "b2c9d808-c25c-4ed5-bf81-b8ab900b16d1",
-            "sourceColumn": "DT",
-            "summarizeBy": "none",
-            "variations": [
-              {
-                "name": "Variation",
-                "defaultHierarchy": {
-                  "hierarchy": "Date Hierarchy",
-                  "table": "LocalDateTable_9fd9353c-ff3f-4e38-b72e-b208bf8e6b73"
-                },
-                "isDefault": true,
-                "relationship": "e1e43401-fc99-4c99-91c6-26eba7470361"
-              }
-            ]
-          },
-          {
-            "name": "Item",
-            "annotations": [
-              {
-                "name": "SummarizationSetBy",
-                "value": "Automatic"
-              }
-            ],
-            "dataType": "string",
-            "lineageTag": "97a38fa8-7fc0-4d00-81b4-a4b0cd46515e",
-            "sourceColumn": "Item",
-            "summarizeBy": "none"
-          },
-          {
-            "name": "Price",
-            "annotations": [
-              {
-                "name": "SummarizationSetBy",
-                "value": "Automatic"
-              }
-            ],
-            "dataType": "int64",
-            "formatString": "0",
-            "lineageTag": "9f8318cf-c4a9-4f0d-ba3d-53a401b91cdd",
-            "sourceColumn": "Price",
-            "summarizeBy": "sum"
-          }
-        ],
-        "lineageTag": "e33b4384-a7ce-4e49-b3fe-53ab87f614bf",
-        "partitions": [
-          {
-            "name": "Data1",
-            "mode": "import",
-            "source": {
-              "expression": [
-                "let   ",
-                "    Source = Folder.Files(DataFolder & \"\"),",
-                "",
-                "    gzOnlyFiles =  Table.RenameColumns(",
-                "                        Table.SelectColumns(",
-                "                            Table.SelectRows(",
-                "                                Source,",
-                "                                each [Extension] = \".gz\"),",
-                "                            {\"Name\",\"Content\"}),",
-                "                        {\"Name\",\"GZFileName\"}),",
-                "",
-                "    withCsvBody = Table.AddColumn(gzOnlyFiles, \"csvbody\", each Binary.Decompress([Content], Compression.GZip)  ),",
-                "",
-                "    withCsvTable = Table.AddColumn(withCsvBody , \"csvtable\", each Csv.Document([csvbody],[Delimiter=\",\", Columns=4, Encoding=1252, QuoteStyle=QuoteStyle.None])   ),",
-                "",
-                "    withCsvTableHeaders = Table.AddColumn(withCsvTable, \"csvtableH\", each Table.PromoteHeaders([csvtable] , [PromoteAllScalars=true] ) ),",
-                "",
-                "    firstTableColumns = Table.ColumnNames(Table.First(withCsvTableHeaders)[csvtableH]),",
-                "",
-                "    expandTable = Table.ExpandTableColumn(withCsvTableHeaders, \"csvtableH\",  firstTableColumns),",
-                "",
-                "    typedColumns = Table.TransformColumnTypes(expandTable,{{\"ID\", Int64.Type}, {\"DT\", type datetime}, {\"Item\", type text}, {\"Price\", Int64.Type}}),",
-                "",
-                "    finalOutput = Table.RemoveColumns(typedColumns, {\"GZFileName\", \"Content\", \"csvbody\", \"csvtable\"})  ",
-                "",
-                "    //aaaaaa = Table.AddColumn(bbbbbb, \"DeltaTime\", each Duration.TotalMinutes([FieldA]-[FieldB])),",
-                "",
-                "in",
-                "   finalOutput"
-              ],
-              "type": "m"
-            }
-          }
-        ]
-      },
       {
         "name": "DateTableTemplate_b63610e3-dbc9-479e-976f-f76358f54d3a",
         "annotations": [
@@ -401,7 +337,89 @@
         ]
       },
       {
-        "name": "LocalDateTable_9fd9353c-ff3f-4e38-b72e-b208bf8e6b73",
+        "name": "Orders",
+        "annotations": [
+          {
+            "name": "PBI_ResultType",
+            "value": "Table"
+          }
+        ],
+        "columns": [
+          {
+            "name": "OrderID",
+            "annotations": [
+              {
+                "name": "SummarizationSetBy",
+                "value": "Automatic"
+              }
+            ],
+            "dataType": "int64",
+            "formatString": "0",
+            "lineageTag": "ee659294-6edf-446f-a14f-ffd01c341398",
+            "sourceColumn": "OrderID",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "DT",
+            "annotations": [
+              {
+                "name": "SummarizationSetBy",
+                "value": "Automatic"
+              }
+            ],
+            "dataType": "dateTime",
+            "formatString": "General Date",
+            "lineageTag": "42946a95-cb9a-4366-a2ff-f5645e5dba9f",
+            "sourceColumn": "DT",
+            "summarizeBy": "none",
+            "variations": [
+              {
+                "name": "Variation",
+                "defaultHierarchy": {
+                  "hierarchy": "Date Hierarchy",
+                  "table": "LocalDateTable_3fd8f3fd-91b0-4776-80af-bd8c78e12aff"
+                },
+                "isDefault": true,
+                "relationship": "2f053237-7ed6-41b4-8a5b-588976ea38d0"
+              }
+            ]
+          },
+          {
+            "name": "CustomerID",
+            "annotations": [
+              {
+                "name": "SummarizationSetBy",
+                "value": "Automatic"
+              }
+            ],
+            "dataType": "int64",
+            "formatString": "0",
+            "lineageTag": "9246d389-849c-4546-8ffc-cd5f8a2ab172",
+            "sourceColumn": "CustomerID",
+            "summarizeBy": "count"
+          }
+        ],
+        "lineageTag": "84c68e70-fa13-4892-b0bb-00c70b9a4280",
+        "partitions": [
+          {
+            "name": "Orders",
+            "mode": "import",
+            "queryGroup": "Data",
+            "source": {
+              "expression": [
+                "let    ",
+                "    SourceTable = CsvGzImporter(DataFolder & \"Orders\", 3),",
+                "    OutTable = Table.TransformColumnTypes(SourceTable,{{\"OrderID\", Int64.Type}, {\"DT\", type datetime}, {\"CustomerID\", Int64.Type}})",
+                "in",
+                "    OutTable"
+              ],
+              "type": "m"
+            }
+          }
+        ]
+      },
+      {
+        "name": "LocalDateTable_3fd8f3fd-91b0-4776-80af-bd8c78e12aff",
         "annotations": [
           {
             "name": "__PBI_LocalDateTable",
@@ -422,7 +440,7 @@
             "formatString": "General Date",
             "isHidden": true,
             "isNameInferred": true,
-            "lineageTag": "9dda7614-30a0-4882-912a-c42cdb6a9fd6",
+            "lineageTag": "be0691f7-f4aa-45f5-8d3c-0ad193742718",
             "sourceColumn": "[Date]",
             "summarizeBy": "none",
             "type": "calculatedTableColumn"
@@ -444,7 +462,7 @@
             "expression": "YEAR([Date])",
             "formatString": "0",
             "isHidden": true,
-            "lineageTag": "decd65c2-ab38-45c2-9303-64c814bd457b",
+            "lineageTag": "9890e9a4-2554-469d-8978-eacdcf358c97",
             "summarizeBy": "none",
             "type": "calculated"
           },
@@ -465,7 +483,7 @@
             "expression": "MONTH([Date])",
             "formatString": "0",
             "isHidden": true,
-            "lineageTag": "eeb5a120-8157-492e-a82e-a8a01dd85f11",
+            "lineageTag": "0e6bfdba-db0e-48aa-bb6d-9ac8ab90ce35",
             "summarizeBy": "none",
             "type": "calculated"
           },
@@ -485,7 +503,7 @@
             "dataType": "string",
             "expression": "FORMAT([Date], \"MMMM\")",
             "isHidden": true,
-            "lineageTag": "fbecdc61-3af7-422c-a2e5-79a227f0fddb",
+            "lineageTag": "4229e681-d0eb-4181-ac32-4c69799ba4a2",
             "sortByColumn": "MonthNo",
             "summarizeBy": "none",
             "type": "calculated"
@@ -507,7 +525,7 @@
             "expression": "INT(([MonthNo] + 2) / 3)",
             "formatString": "0",
             "isHidden": true,
-            "lineageTag": "41734b8f-cb10-4f8c-b5d9-234a757880db",
+            "lineageTag": "8d54fdf5-388d-44b0-b403-a390441ffca5",
             "summarizeBy": "none",
             "type": "calculated"
           },
@@ -527,7 +545,7 @@
             "dataType": "string",
             "expression": "\"Qtr \" & [QuarterNo]",
             "isHidden": true,
-            "lineageTag": "76174e58-56f8-4213-9621-af8922cf92cf",
+            "lineageTag": "7bb2c327-6eef-49ff-b2c8-31ea97a9d568",
             "sortByColumn": "QuarterNo",
             "summarizeBy": "none",
             "type": "calculated"
@@ -549,7 +567,7 @@
             "expression": "DAY([Date])",
             "formatString": "0",
             "isHidden": true,
-            "lineageTag": "e74a6e45-6838-4a28-aad8-94a6081c302a",
+            "lineageTag": "44a93210-6266-4ba6-af1f-47b302b2371c",
             "summarizeBy": "none",
             "type": "calculated"
           }
@@ -567,44 +585,129 @@
               {
                 "name": "Year",
                 "column": "Year",
-                "lineageTag": "1301b817-8f89-4d1f-9f6e-2b554a4f0604",
+                "lineageTag": "74f8d86d-a072-41e1-a141-394e2ccbea26",
                 "ordinal": 0
               },
               {
                 "name": "Quarter",
                 "column": "Quarter",
-                "lineageTag": "274ccc00-4165-4afb-9b37-02b4e01edff5",
+                "lineageTag": "b5ade716-3196-4466-9652-bb0e03a14a92",
                 "ordinal": 1
               },
               {
                 "name": "Month",
                 "column": "Month",
-                "lineageTag": "728c8676-076d-4a69-b83c-3c8317417949",
+                "lineageTag": "1494181c-31a6-4ed6-8948-2b640e2e30a6",
                 "ordinal": 2
               },
               {
                 "name": "Day",
                 "column": "Day",
-                "lineageTag": "5a5ae516-14f0-404b-92e9-9b7616354b68",
+                "lineageTag": "fa497f4d-4545-4ff9-9bab-bc5e83b08746",
                 "ordinal": 3
               }
             ],
-            "lineageTag": "ca2a6655-292f-4bd3-991d-bfad5a202c73"
+            "lineageTag": "7e18f00d-ce44-4609-b169-4aa9f9bdb5e9"
           }
         ],
         "isHidden": true,
-        "lineageTag": "251da136-32f9-424c-ba69-9764cebd3d97",
+        "lineageTag": "e4d2804e-236e-4254-853f-c006ef44c7c1",
         "partitions": [
           {
-            "name": "LocalDateTable_9fd9353c-ff3f-4e38-b72e-b208bf8e6b73",
+            "name": "LocalDateTable_3fd8f3fd-91b0-4776-80af-bd8c78e12aff",
             "mode": "import",
             "source": {
-              "expression": "Calendar(Date(Year(MIN('Data1'[DT])), 1, 1), Date(Year(MAX('Data1'[DT])), 12, 31))",
+              "expression": "Calendar(Date(Year(MIN('Orders'[DT])), 1, 1), Date(Year(MAX('Orders'[DT])), 12, 31))",
               "type": "calculated"
             }
           }
         ],
         "showAsVariationsOnly": true
+      },
+      {
+        "name": "OrdersDetails",
+        "annotations": [
+          {
+            "name": "PBI_ResultType",
+            "value": "Table"
+          }
+        ],
+        "columns": [
+          {
+            "name": "OrderID",
+            "annotations": [
+              {
+                "name": "SummarizationSetBy",
+                "value": "Automatic"
+              }
+            ],
+            "dataType": "int64",
+            "formatString": "0",
+            "lineageTag": "aaefca0e-dd30-41d9-a0ec-0b20655846a1",
+            "sourceColumn": "OrderID",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "RowID",
+            "annotations": [
+              {
+                "name": "SummarizationSetBy",
+                "value": "Automatic"
+              }
+            ],
+            "dataType": "int64",
+            "formatString": "0",
+            "lineageTag": "8e1b94d1-64ab-4f90-beb8-332794148493",
+            "sourceColumn": "RowID",
+            "summarizeBy": "count"
+          },
+          {
+            "name": "Item",
+            "annotations": [
+              {
+                "name": "SummarizationSetBy",
+                "value": "Automatic"
+              }
+            ],
+            "dataType": "string",
+            "lineageTag": "6575a4ea-a105-4f21-8642-3540e9bee8f5",
+            "sourceColumn": "Item",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "Price",
+            "annotations": [
+              {
+                "name": "SummarizationSetBy",
+                "value": "Automatic"
+              }
+            ],
+            "dataType": "double",
+            "formatString": "0",
+            "lineageTag": "4422e92b-a205-4b55-a279-ae42e4c71208",
+            "sourceColumn": "Price",
+            "summarizeBy": "sum"
+          }
+        ],
+        "lineageTag": "3bbeea86-a9bc-43a1-8b61-9b05092997f8",
+        "partitions": [
+          {
+            "name": "OrdersDetails",
+            "mode": "import",
+            "queryGroup": "Data",
+            "source": {
+              "expression": [
+                "let    ",
+                "    SourceTable = CsvGzImporter(DataFolder & \"OrdersDetails\", 4),    ",
+                "    OutTable = Table.TransformColumnTypes(SourceTable,{{\"OrderID\", Int64.Type}, {\"RowID\", Int64.Type}, {\"Item\", type text}, {\"Price\", type number}}, \"en-US\")",
+                "    ",
+                "in",
+                "    OutTable"
+              ],
+              "type": "m"
+            }
+          }
+        ]
       }
     ]
   }

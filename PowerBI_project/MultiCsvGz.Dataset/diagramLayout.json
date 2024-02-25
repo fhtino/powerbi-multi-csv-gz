@@ -10,11 +10,24 @@
       "nodes": [
         {
           "location": {
-            "x": 0,
-            "y": 0
+            "x": 517,
+            "y": 78
           },
-          "nodeIndex": "Data1",
-          "nodeLineageTag": "e33b4384-a7ce-4e49-b3fe-53ab87f614bf",
+          "nodeIndex": "Orders",
+          "nodeLineageTag": "84c68e70-fa13-4892-b0bb-00c70b9a4280",
+          "size": {
+            "height": 176,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 10,
+            "y": -5
+          },
+          "nodeIndex": "OrdersDetails",
+          "nodeLineageTag": "3bbeea86-a9bc-43a1-8b61-9b05092997f8",
           "size": {
             "height": 176,
             "width": 234
