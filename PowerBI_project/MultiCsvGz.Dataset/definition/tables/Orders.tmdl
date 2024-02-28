@@ -1,0 +1,48 @@
+table Orders
+	lineageTag: 84c68e70-fa13-4892-b0bb-00c70b9a4280
+
+	column OrderID
+		dataType: int64
+		formatString: 0
+		lineageTag: ee659294-6edf-446f-a14f-ffd01c341398
+		summarizeBy: none
+		sourceColumn: OrderID
+
+		annotation SummarizationSetBy = Automatic
+
+	column DT
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 42946a95-cb9a-4366-a2ff-f5645e5dba9f
+		summarizeBy: none
+		sourceColumn: DT
+
+		variation Variation
+			isDefault
+			relationship: 2f053237-7ed6-41b4-8a5b-588976ea38d0
+			defaultHierarchy: LocalDateTable_3fd8f3fd-91b0-4776-80af-bd8c78e12aff.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column CustomerID
+		dataType: int64
+		formatString: 0
+		lineageTag: 9246d389-849c-4546-8ffc-cd5f8a2ab172
+		summarizeBy: count
+		sourceColumn: CustomerID
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Orders = m
+		mode: import
+		queryGroup: Data
+		source = ```
+				let    
+				    SourceTable = CsvGzImporter(DataFolder & "Orders", 3),
+				    OutTable = Table.TransformColumnTypes(SourceTable,{{"OrderID", Int64.Type}, {"DT", type datetime}, {"CustomerID", Int64.Type}})
+				in
+				    OutTable
+				```
+
+	annotation PBI_ResultType = Table
+

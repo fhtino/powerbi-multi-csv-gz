@@ -1,0 +1,9 @@
+relationship 2f053237-7ed6-41b4-8a5b-588976ea38d0
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Orders.DT
+	toColumn: LocalDateTable_3fd8f3fd-91b0-4776-80af-bd8c78e12aff.Date
+
+relationship b19c0edd-51eb-4db6-9a4e-60bdfe6eebab
+	fromColumn: OrdersDetails.OrderID
+	toColumn: Orders.OrderID
+

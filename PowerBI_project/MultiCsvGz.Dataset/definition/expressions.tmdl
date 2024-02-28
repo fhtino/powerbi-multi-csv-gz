@@ -1,0 +1,38 @@
+expression DataFolder = "X:\work_fabry\src\GitHub\powerbi-multi-csv-gz.git\Data\" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 33f827b9-34f7-4807-aa4a-02105555910a
+	queryGroup: Data
+
+	annotation PBI_ResultType = Text
+
+expression CsvGzImporter = ```
+		let
+		    MyFunct = (DataFolder as text, NumOfFields as number) =>  let   
+		    
+		        Source = Folder.Files(DataFolder & ""),
+		
+		        gzOnlyFiles =  Table.RenameColumns(
+		                        Table.SelectColumns(
+		                            Table.SelectRows(
+		                                Source,
+		                                each [Extension] = ".gz"),
+		                            {"Name", "Content"}),
+		                        {"Name", "GZFileName"}),
+		
+		        withCsvBody = Table.AddColumn(gzOnlyFiles, "csvbody", each Binary.Decompress([Content], Compression.GZip)  ),
+		        withCsvTable = Table.AddColumn(withCsvBody , "csvtable", each Csv.Document([csvbody],[Delimiter=",", Columns=NumOfFields, Encoding=1252, QuoteStyle=QuoteStyle.None])   ),
+		        withCsvTableHeaders = Table.AddColumn(withCsvTable, "csvtableH", each Table.PromoteHeaders([csvtable] , [PromoteAllScalars=true] ) ),
+		        firstTableColumns = Table.ColumnNames(Table.First(withCsvTableHeaders)[csvtableH]),
+		        expandTable = Table.ExpandTableColumn(withCsvTableHeaders, "csvtableH",  firstTableColumns),
+		        finalTable = Table.RemoveColumns(expandTable, {"GZFileName", "Content", "csvbody", "csvtable"})  
+		
+		    in
+		        finalTable
+		
+		in
+		    MyFunct
+		```
+	lineageTag: efa5fc63-890e-4eaa-8fb4-5fa6f18656f0
+	queryGroup: Data
+
+	annotation PBI_ResultType = Function
+
