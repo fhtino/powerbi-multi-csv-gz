@@ -1,10 +1,10 @@
-table OrdersDetails
-	lineageTag: 3bbeea86-a9bc-43a1-8b61-9b05092997f8
+table SAOrdersDetails
+	lineageTag: a417210d-a723-43c1-b474-96e653e6c133
 
 	column OrderID
 		dataType: int64
 		formatString: 0
-		lineageTag: aaefca0e-dd30-41d9-a0ec-0b20655846a1
+		lineageTag: 161513ab-67d5-42f5-8757-a38f03283902
 		summarizeBy: none
 		sourceColumn: OrderID
 
@@ -13,7 +13,7 @@ table OrdersDetails
 	column RowID
 		dataType: int64
 		formatString: 0
-		lineageTag: 8e1b94d1-64ab-4f90-beb8-332794148493
+		lineageTag: d08726d7-d081-47f8-9f40-35480fd59ff2
 		summarizeBy: count
 		sourceColumn: RowID
 
@@ -21,7 +21,7 @@ table OrdersDetails
 
 	column Item
 		dataType: string
-		lineageTag: 6575a4ea-a105-4f21-8642-3540e9bee8f5
+		lineageTag: 1bf8eabf-2c09-4f9a-8590-7899807c5b7c
 		summarizeBy: none
 		sourceColumn: Item
 
@@ -29,27 +29,28 @@ table OrdersDetails
 
 	column Price
 		dataType: double
-		formatString: 0
-		lineageTag: 4422e92b-a205-4b55-a279-ae42e4c71208
+		lineageTag: 94019229-5f90-4ebf-9dc1-ca0ce86354b5
 		summarizeBy: sum
 		sourceColumn: Price
 
 		annotation SummarizationSetBy = Automatic
 
-	partition OrdersDetails = m
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition SAOrdersDetails = m
 		mode: import
 		queryGroup: Data
 		source = ```
 				let
-				    GzFiles     = RetrieveFromLocalFolder(LocalDataFolder & "OrdersDetails"),
-				    CSVData     = ExpandCsvGz(GzFiles, 4),
-				    OutTable    = Table.TransformColumnTypes(CSVData,{{"OrderID", Int64.Type}, 
+				    GZFiles     = RetrieveFromSA(SAName, SAContainer, "ordersdetailscsvgz/"),
+				    CSVData     = ExpandCsvGz(GZFiles, 4),
+				    FinalOutput = Table.TransformColumnTypes(CSVData,{{"OrderID", Int64.Type}, 
 				                                                      {"RowID", Int64.Type}, 
 				                                                      {"Item", type text}, 
 				                                                      {"Price", type number}}, 
-				                                             "en-US")
+				                                             "en-US")    
 				in
-				    OutTable
+				    FinalOutput
 				```
 
 	annotation PBI_ResultType = Table

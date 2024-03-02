@@ -7,3 +7,12 @@ relationship b19c0edd-51eb-4db6-9a4e-60bdfe6eebab
 	fromColumn: OrdersDetails.OrderID
 	toColumn: Orders.OrderID
 
+relationship b427f877-8a09-468a-ab9c-a33df399a16f
+	joinOnDateBehavior: datePartOnly
+	fromColumn: SAOrders.DT
+	toColumn: LocalDateTable_b0d6d310-71c0-4449-9850-5215c4700ec1.Date
+
+relationship 9d8b82b8-497d-46da-af19-b9406dd41ab8
+	fromColumn: SAOrdersDetails.OrderID
+	toColumn: SAOrders.OrderID
+

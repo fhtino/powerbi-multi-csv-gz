@@ -10,11 +10,19 @@ queryGroup Data
 
 	annotation PBI_QueryGroupOrder = 0
 
+queryGroup Data\Params
+
+	annotation PBI_QueryGroupOrder = 0
+
+queryGroup Data\Functions
+
+	annotation PBI_QueryGroupOrder = 1
+
 annotation PBI_ProTooling = ["DevMode"]
 
 annotation PBIDesktopVersion = 2.126.927.0 (24.02)
 
-annotation PBI_QueryOrder = ["DataFolder","CsvGzImporter","Orders","OrdersDetails"]
+annotation PBI_QueryOrder = ["LocalDataFolder","Orders","OrdersDetails","SAOrders","RetrieveFromSA","RetrieveFromLocalFolder","ExpandCsvGz","SAName","SAContainer","SAOrdersDetails"]
 
 annotation __PBI_TimeIntelligenceEnabled = 1
 
@@ -22,4 +30,7 @@ ref table DateTableTemplate_b63610e3-dbc9-479e-976f-f76358f54d3a
 ref table Orders
 ref table LocalDateTable_3fd8f3fd-91b0-4776-80af-bd8c78e12aff
 ref table OrdersDetails
+ref table SAOrders
+ref table LocalDateTable_b0d6d310-71c0-4449-9850-5215c4700ec1
+ref table SAOrdersDetails
 

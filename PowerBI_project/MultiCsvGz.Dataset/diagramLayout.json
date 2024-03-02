@@ -10,8 +10,8 @@
       "nodes": [
         {
           "location": {
-            "x": 517,
-            "y": 78
+            "x": 128,
+            "y": 0
           },
           "nodeIndex": "Orders",
           "nodeLineageTag": "84c68e70-fa13-4892-b0bb-00c70b9a4280",
@@ -23,14 +23,40 @@
         },
         {
           "location": {
-            "x": 10,
-            "y": -5
+            "x": 463,
+            "y": 139
           },
           "nodeIndex": "OrdersDetails",
           "nodeLineageTag": "3bbeea86-a9bc-43a1-8b61-9b05092997f8",
           "size": {
             "height": 176,
             "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 124.19999694824219,
+            "y": 421.5
+          },
+          "nodeIndex": "SAOrders",
+          "nodeLineageTag": "dc13a9fe-a4aa-40ce-a80f-b8d8f901b3c0",
+          "size": {
+            "height": 163,
+            "width": 239
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 457.59999084472656,
+            "y": 584.75
+          },
+          "nodeIndex": "SAOrdersDetails",
+          "nodeLineageTag": "a417210d-a723-43c1-b474-96e653e6c133",
+          "size": {
+            "height": 176,
+            "width": 230
           },
           "zIndex": 0
         }

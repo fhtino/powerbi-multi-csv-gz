@@ -1,10 +1,10 @@
-table Orders
-	lineageTag: 84c68e70-fa13-4892-b0bb-00c70b9a4280
+table SAOrders
+	lineageTag: dc13a9fe-a4aa-40ce-a80f-b8d8f901b3c0
 
 	column OrderID
 		dataType: int64
 		formatString: 0
-		lineageTag: ee659294-6edf-446f-a14f-ffd01c341398
+		lineageTag: 5fb3b3f4-fec2-45d0-b30a-dda9c55d110f
 		summarizeBy: none
 		sourceColumn: OrderID
 
@@ -13,36 +13,36 @@ table Orders
 	column DT
 		dataType: dateTime
 		formatString: General Date
-		lineageTag: 42946a95-cb9a-4366-a2ff-f5645e5dba9f
+		lineageTag: bb0023ab-5002-48a9-bb8f-9230669b28f3
 		summarizeBy: none
 		sourceColumn: DT
 
 		variation Variation
 			isDefault
-			relationship: 2f053237-7ed6-41b4-8a5b-588976ea38d0
-			defaultHierarchy: LocalDateTable_3fd8f3fd-91b0-4776-80af-bd8c78e12aff.'Date Hierarchy'
+			relationship: b427f877-8a09-468a-ab9c-a33df399a16f
+			defaultHierarchy: LocalDateTable_b0d6d310-71c0-4449-9850-5215c4700ec1.'Date Hierarchy'
 
 		annotation SummarizationSetBy = Automatic
 
 	column CustomerID
 		dataType: int64
 		formatString: 0
-		lineageTag: 9246d389-849c-4546-8ffc-cd5f8a2ab172
+		lineageTag: cfea88fc-4f8c-47a6-9cab-3755f5c4b92c
 		summarizeBy: count
 		sourceColumn: CustomerID
 
 		annotation SummarizationSetBy = Automatic
 
-	partition Orders = m
+	partition SAOrders = m
 		mode: import
 		queryGroup: Data
 		source = ```
 				let
-				    GzFiles     = RetrieveFromLocalFolder(LocalDataFolder & "Orders"),
-				    CSVData     = ExpandCsvGz(GzFiles, 3),
+				    GZFiles     = RetrieveFromSA(SAName, SAContainer, "orderscsvgz/"),
+				    CSVData     = ExpandCsvGz(GZFiles, 3),
 				    FinalOutput = Table.TransformColumnTypes(CSVData, {{"OrderID", Int64.Type}, 
 				                                                       {"DT", type datetime}, 
-				                                                       {"CustomerID", Int64.Type}}) 
+				                                                       {"CustomerID", Int64.Type}})   
 				in
 				    FinalOutput
 				```

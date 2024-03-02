@@ -1,38 +1,84 @@
-expression DataFolder = "X:\work_fabry\src\GitHub\powerbi-multi-csv-gz.git\Data\" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+expression LocalDataFolder = "X:\work_fabry\src\GitHub\powerbi-multi-csv-gz.git\Data\" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
 	lineageTag: 33f827b9-34f7-4807-aa4a-02105555910a
-	queryGroup: Data
+	queryGroup: Data\Params
 
 	annotation PBI_ResultType = Text
 
-expression CsvGzImporter = ```
+expression RetrieveFromSA = ```
 		let
-		    MyFunct = (DataFolder as text, NumOfFields as number) =>  let   
-		    
-		        Source = Folder.Files(DataFolder & ""),
-		
-		        gzOnlyFiles =  Table.RenameColumns(
-		                        Table.SelectColumns(
-		                            Table.SelectRows(
-		                                Source,
-		                                each [Extension] = ".gz"),
-		                            {"Name", "Content"}),
-		                        {"Name", "GZFileName"}),
-		
-		        withCsvBody = Table.AddColumn(gzOnlyFiles, "csvbody", each Binary.Decompress([Content], Compression.GZip)  ),
-		        withCsvTable = Table.AddColumn(withCsvBody , "csvtable", each Csv.Document([csvbody],[Delimiter=",", Columns=NumOfFields, Encoding=1252, QuoteStyle=QuoteStyle.None])   ),
-		        withCsvTableHeaders = Table.AddColumn(withCsvTable, "csvtableH", each Table.PromoteHeaders([csvtable] , [PromoteAllScalars=true] ) ),
-		        firstTableColumns = Table.ColumnNames(Table.First(withCsvTableHeaders)[csvtableH]),
-		        expandTable = Table.ExpandTableColumn(withCsvTableHeaders, "csvtableH",  firstTableColumns),
-		        finalTable = Table.RemoveColumns(expandTable, {"GZFileName", "Content", "csvbody", "csvtable"})  
-		
+		    MyFunct = (SAName as text, SAContainer as text, FilesFilter as text) =>         
+		    let    
+		        Source =        AzureStorage.Blobs(SAName),
+		        AllFiles =      Source{[Name=SAContainer]}[Data],
+		        FilesInFolder = Table.SelectRows(AllFiles, each Text.StartsWith([Name], FilesFilter)),
+		        GzFiles1 =      Table.SelectRows(FilesInFolder, each [Extension] = ".gz"),
+		        GzFiles2 =      Table.SelectColumns(GzFiles1, {"Name", "Content"}),
+		        GzFiles3 =      Table.RenameColumns(GzFiles2, {"Name","GZFileName"}),
+		        GzFiles4 =      Table.RenameColumns(GzFiles3, {"Content", "GZContent"})
 		    in
-		        finalTable
-		
+		        GzFiles4
 		in
 		    MyFunct
 		```
-	lineageTag: efa5fc63-890e-4eaa-8fb4-5fa6f18656f0
-	queryGroup: Data
+	lineageTag: 0cfc8b79-4f79-4649-9081-ad204da9de51
+	queryGroup: Data\Functions
+
+	annotation PBI_NavigationStepName = Navigation
 
 	annotation PBI_ResultType = Function
+
+expression ExpandCsvGz = ```
+		let
+		    MyFunct = (InTable as table, NumOfFields as number) =>  
+		    let   
+		        withCsvBody         = Table.AddColumn(InTable, "csvbody", each Binary.Decompress([GZContent], Compression.GZip) ),
+		        withCsvTable        = Table.AddColumn(withCsvBody , "csvtable", each Csv.Document([csvbody],[Delimiter=",", Columns=NumOfFields, Encoding=1252, QuoteStyle=QuoteStyle.None]) ),
+		        withCsvTableHeaders = Table.AddColumn(withCsvTable, "csvtableH", each Table.PromoteHeaders([csvtable] , [PromoteAllScalars=true] ) ),
+		        firstTableColumns   = Table.ColumnNames(Table.First(withCsvTableHeaders)[csvtableH]),
+		        expandTable         = Table.ExpandTableColumn(withCsvTableHeaders, "csvtableH",  firstTableColumns),
+		        finalTable          = Table.RemoveColumns(expandTable, {"GZFileName", "GZContent", "csvbody", "csvtable"})  
+		    in
+		        finalTable
+		in
+		    MyFunct
+		```
+	lineageTag: 55d28a7b-12f6-424f-93c3-65e4031f6c63
+	queryGroup: Data\Functions
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Function
+
+expression RetrieveFromLocalFolder = ```
+		let
+		    MyFunct = (FolderName as text) =>  
+		    let    
+		        SourceFiles = Folder.Files(FolderName),
+		        GzFiles1 = Table.SelectRows( SourceFiles, each [Extension] = ".gz"), 
+		        GzFiles2 = Table.SelectColumns(GzFiles1 , {"Name", "Content"}), 
+		        GzFiles3 = Table.RenameColumns(GzFiles2 , {"Name", "GZFileName"}),
+		        GzFiles4 = Table.RenameColumns(GzFiles3 , {"Content", "GZContent"})        
+		    in
+		        GzFiles4
+		in
+		    MyFunct
+		```
+	lineageTag: 9793d2d9-ccd9-4e7d-8e6d-04f485e411ad
+	queryGroup: Data\Functions
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Function
+
+expression SAName = "fhtinoteststorage2" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: ab639718-294c-4a15-ad22-c42d52b64c78
+	queryGroup: Data\Params
+
+	annotation PBI_ResultType = Text
+
+expression SAContainer = "powerbi-tests" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: b53edb06-effd-4c36-bd21-3e93577a7863
+	queryGroup: Data\Params
+
+	annotation PBI_ResultType = Text
 
