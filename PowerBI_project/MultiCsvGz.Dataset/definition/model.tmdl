@@ -20,7 +20,7 @@ queryGroup Data\Functions
 
 annotation PBI_ProTooling = ["DevMode"]
 
-annotation PBIDesktopVersion = 2.126.927.0 (24.02)
+annotation PBIDesktopVersion = 2.138.782.0 (24.11)
 
 annotation PBI_QueryOrder = ["LocalDataFolder","Orders","OrdersDetails","SAOrders","RetrieveFromSA","RetrieveFromLocalFolder","ExpandCsvGz","SAName","SAContainer","SAOrdersDetails"]
 
@@ -33,4 +33,6 @@ ref table OrdersDetails
 ref table SAOrders
 ref table LocalDateTable_b0d6d310-71c0-4449-9850-5215c4700ec1
 ref table SAOrdersDetails
+
+ref cultureInfo en-US
 

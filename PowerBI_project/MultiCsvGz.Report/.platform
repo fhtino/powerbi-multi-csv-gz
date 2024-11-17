@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "MultiCsvGz"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "a12dfb8f-8e68-4dcf-aae2-3ef5b3442cda"
+  }
+}
